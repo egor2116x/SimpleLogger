@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "SimpleLoggerParserDll.h"
 
-extern "C" LOGGERPARSER_API Parser * APIENTRY CreateParser(const std::wstring & fileName) {
-    return new Parser(fileName);
+extern "C" LOGGERPARSER_API Parser * APIENTRY CreateParser() {
+    return new Parser;
 }
 
 BOOL APIENTRY DllMain( HMODULE hModule,

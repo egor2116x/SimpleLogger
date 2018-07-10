@@ -14,9 +14,10 @@ using wStrSizeType = std::wstring::size_type;
 class Parser
 {
     public:
-        Parser(const std::wstring & inFilePath);
         bool Parse();
         void Print();
+        void SetFilePath(const std::wstring & filePath) { m_fileName = filePath; }
+        const std::wstring & GetFilePath() const { return m_fileName; }
         std::vector<ItemLogger> & GetDataBase() { return m_dataBase; }
     private:
         std::wstring m_fileName;
@@ -26,8 +27,12 @@ class Parser
 
 inline bool Parser::Parse()
 {
-    if (m_in.is_open())
-    {
+        if (m_fileName.empty())
+        {
+            return false;
+        }
+
+        m_in.open(m_fileName.c_str(), std::ios::app);
         std::wstring buff;
         while (std::getline(m_in, buff))
         {
@@ -53,11 +58,7 @@ inline bool Parser::Parse()
                 }                 
             }
         }
-    }
-    else
-    {
-        return false;
-    }
+
 
     if (m_dataBase.empty())
     {
@@ -77,4 +78,4 @@ inline void Parser::Print()
     }
 }
 
-extern "C" LOGGERPARSER_API Parser * APIENTRY CreateParser(const std::wstring & fileName);
+extern "C" LOGGERPARSER_API Parser * APIENTRY CreateParser();
