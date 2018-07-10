@@ -2,11 +2,11 @@
 
 #include "stdafx.h"
 
-#if defined(SIMPLELOGGER_EXPORTS) // inside DLL
+#if defined(SIMPLELOGGER_EXPORTS) 
 #   define LOGGER_API   __declspec(dllexport)
-#else // outside DLL
+#else 
 #   define LOGGER_API   __declspec(dllimport)
-#endif  // XYZLIBRARY_EXPORT
+#endif 
 
 class SimpleLogger
 {
@@ -29,9 +29,12 @@ inline void SimpleLogger::Log(Arg && arg, Args &&... args)
 {
     if (m_out.is_open())
     {
-
+        std::time_t t = std::time(nullptr);
+        std::array<wchar_t, 100> buff;
+        std::wcsftime(&buff[0], buff.size(), L"%c %Z", std::localtime(&t));
         std::lock_guard<std::mutex> lock(m_mtx);
         m_out << L"["
+            << &buff[0] << L','
             << static_cast<unsigned>(GetCurrentProcessId()) << L','
             << static_cast<unsigned>(GetCurrentThreadId())  << L','
             << std::forward<Arg>(arg);
