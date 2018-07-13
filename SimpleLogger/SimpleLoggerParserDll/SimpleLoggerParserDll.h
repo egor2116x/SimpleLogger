@@ -70,6 +70,7 @@ inline bool Parser::Parse()
 
 inline void Parser::Print()
 {
+    std::sort(m_dataBase.begin(), m_dataBase.end());
     for (auto it = m_dataBase.begin(); it != m_dataBase.end(); ++it) {
         for (auto it2 = (*it).begin(); it2 != (*it).end(); ++it2) {
             std::wcout << *it2 << " ";
