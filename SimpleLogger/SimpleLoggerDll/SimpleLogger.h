@@ -30,11 +30,17 @@ inline void SimpleLogger::Log(Arg && arg, Args &&... args)
     if (m_out.is_open())
     {
         std::time_t t = std::time(nullptr);
-        std::array<wchar_t, 100> buff;
-        std::wcsftime(&buff[0], buff.size(), L"%c %Z", std::localtime(&t));
+        std::tm * _tm = std::localtime(&t);
+        std::wstring tmp;
+        std::wstring  bufftime = std::to_wstring(_tm->tm_year + 1900);
+                      tmp = std::to_wstring(_tm->tm_mon + 1);
+                      bufftime += L" " + (tmp.size() == 1 ? L"0" + tmp : tmp);
+                      tmp = std::to_wstring(_tm->tm_mday);
+                      bufftime += L" " + (tmp.size() == 1 ? L"0" + tmp : tmp);
+
         std::lock_guard<std::mutex> lock(m_mtx);
         m_out << L"["
-            << &buff[0] << L','
+            << bufftime << L','
             << static_cast<unsigned>(GetCurrentProcessId()) << L','
             << static_cast<unsigned>(GetCurrentThreadId())  << L','
             << std::forward<Arg>(arg);
