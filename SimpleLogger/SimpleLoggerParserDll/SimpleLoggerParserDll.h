@@ -20,6 +20,8 @@ class Parser
         const std::wstring & GetFilePath() const { return m_fileName; }
         std::vector<ItemLogger> & GetDataBase() { return m_dataBase; }
     private:
+        int GetOffset(const std::wstring & str);
+    private:
         std::wstring m_fileName;
         std::wifstream m_in;
         std::vector<ItemLogger> m_dataBase;
@@ -71,12 +73,41 @@ inline bool Parser::Parse()
 inline void Parser::Print()
 {
     std::sort(m_dataBase.begin(), m_dataBase.end());
-    for (auto it = m_dataBase.begin(); it != m_dataBase.end(); ++it) {
-        for (auto it2 = (*it).begin(); it2 != (*it).end(); ++it2) {
-            std::wcout << *it2 << " ";
+    int offset = 1;
+
+    for (size_t i = 0; i < m_dataBase.size(); ++i) {
+        offset = GetOffset(m_dataBase[i][0]);
+        offset = (offset % 1000 - 10 <= 0 ? 1 : offset % 1000 - 10);
+        for (size_t j = 0; j < m_dataBase[i].size(); j++) {
+            std::wcout << std::setw(1);
+            if (j == 0)
+                std::wcout <<  L"Date      ";
+            else if(j == 1)
+                std::wcout <<  L"Process ID";
+            else if(j == 2)
+                std::wcout << L"Thread ID ";
+            
+            std::wcout << std::setw(static_cast<int>(offset));
+            if (j > 2)
+                std::wcout << std::setw(static_cast<int>(offset + 10));
+
+            std::wcout << m_dataBase[i][j] << std::endl;
         }
         std::wcout << std::endl;
     }
+}
+
+inline int Parser::GetOffset(const std::wstring & str)
+{
+    std::wstringstream ss;
+    std::wstring tmp;
+    int result = 1;
+    ss << str;
+    while (ss >> tmp)
+    {
+        result += std::stoi(tmp);
+    }
+    return (result <= 0 ? 1 : result);
 }
 
 extern "C" LOGGERPARSER_API Parser * APIENTRY CreateParser();
